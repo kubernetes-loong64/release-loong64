@@ -21,7 +21,7 @@ jobs:
         ports:
           - 5000:5000
     env:
-      REGISTRY_NAME: ${{ github.event_name == 'pull_request' && 'localhost:5000' || (vars.REGISTRY_NAME || 'kubernetesloong64') }}
+      REGISTRY_NAME: ${{ github.event_name == 'pull_request' && '127.0.0.1:5000' || (vars.REGISTRY_NAME || 'kubernetesloong64') }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
