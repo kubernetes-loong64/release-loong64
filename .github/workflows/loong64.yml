@@ -134,6 +134,7 @@ jobs:
             ARCH=loong64 QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
             BASEIMAGE=ghcr.io/loong64/debian:trixie-slim \
             REGISTRY=${{ env.REGISTRY_NAME }} \
+            BASE_REGISTRY=${{ env.REGISTRY_NAME }} \
             IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
             -C images/build/distroless-iptables
           echo "===== make push completed ====="
