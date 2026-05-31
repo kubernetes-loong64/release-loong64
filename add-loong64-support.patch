@@ -168,7 +168,7 @@ index 8e263ac0..0aeef19b 100644
  # iptables-wrapper-installer needs to know that iptables exists before doing all its magic
  RUN echo "" >  /usr/sbin/iptables && \
 diff --git a/images/build/setcap/Makefile b/images/build/setcap/Makefile
-index 6bd7ce6c..619f1ecc 100644
+index 6bd7ce6c..8c397377 100644
 --- a/images/build/setcap/Makefile
 +++ b/images/build/setcap/Makefile
 @@ -22,6 +22,7 @@ IMAGE_VERSION ?= bookworm-v1.0.7
@@ -190,7 +190,7 @@ index 6bd7ce6c..619f1ecc 100644
  
  # This option is for running docker manifest command
  export DOCKER_CLI_EXPERIMENTAL := enabled
-@@ -40,7 +42,7 @@ build:
+@@ -40,24 +42,23 @@ build:
  	umask 0022
  
  	# Enable execution of multi-architecture containers
@@ -199,8 +199,9 @@ index 6bd7ce6c..619f1ecc 100644
  	docker buildx version
  	BUILDER=$(shell docker buildx create --use)
  	docker buildx build \
-@@ -48,16 +50,14 @@ build:
+ 		--pull \
  		--load \
++		--network=host \
  		--platform linux/$(ARCH) \
  		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION) \
 -		-t $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG) \
