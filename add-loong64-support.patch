@@ -96,7 +96,7 @@ index db1576d0..cb25e4a2 100755
  clean:
  	docker rmi -f $(IMAGE)-$(ARCH):$(IMAGE_VERSION) || true
 diff --git a/images/build/distroless-iptables/Makefile b/images/build/distroless-iptables/Makefile
-index b7517313..ffd2ffd0 100644
+index b7517313..4770e2a1 100644
 --- a/images/build/distroless-iptables/Makefile
 +++ b/images/build/distroless-iptables/Makefile
 @@ -23,6 +23,8 @@ CONFIG ?= distroless-bookworm
@@ -119,16 +119,19 @@ index b7517313..ffd2ffd0 100644
  
  ifneq ($(ARCH), amd64)
  	SKIP_WRAPPER_CHECK=--no-sanity-check
-@@ -47,7 +50,7 @@ build:
+@@ -47,16 +50,17 @@ build:
  	umask 0022
  
  	# Enable execution of multi-architecture containers
 -	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) --reset -p yes
 +	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) $(QEMUFLAGS)
  	docker buildx version
- 	BUILDER=$(shell docker buildx create --use)
+-	BUILDER=$(shell docker buildx create --use)
++	printf '[registry."%s"]\nhttp = true\ninsecure = true\n' "$(REGISTRY_SERVICE)" > /tmp/buildkitd.toml
++	BUILDER=$(shell tr -dc 'a-zA-Z' < /dev/urandom | head -c 16)
++	docker buildx create --name $BUILDER --use --driver docker-container --driver-opt "network=host" --buildkitd-flags '--allow-insecure-entitlement network.host' --buildkitd-config /tmp/buildkitd.toml
  	docker buildx build \
-@@ -55,8 +58,7 @@ build:
+ 		--pull \
  		--load \
  		--platform linux/$(ARCH) \
  		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION) \
@@ -138,7 +141,7 @@ index b7517313..ffd2ffd0 100644
  		--build-arg=BASEIMAGE=$(BASEIMAGE) \
  		--build-arg=GORUNNERIMAGE=$(GORUNNERIMAGE) \
  		--build-arg=SKIP_WRAPPER_CHECK=$(SKIP_WRAPPER_CHECK) \
-@@ -65,8 +67,7 @@ build:
+@@ -65,8 +69,7 @@ build:
  
  push: build
  	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)
@@ -168,10 +171,10 @@ index 8e263ac0..0aeef19b 100644
  # iptables-wrapper-installer needs to know that iptables exists before doing all its magic
  RUN echo "" >  /usr/sbin/iptables && \
 diff --git a/images/build/setcap/Makefile b/images/build/setcap/Makefile
-index 6bd7ce6c..619f1ecc 100644
+index 6bd7ce6c..4af030e4 100644
 --- a/images/build/setcap/Makefile
 +++ b/images/build/setcap/Makefile
-@@ -22,6 +22,7 @@ IMAGE_VERSION ?= bookworm-v1.0.7
+@@ -22,15 +22,19 @@ IMAGE_VERSION ?= bookworm-v1.0.7
  CONFIG ?= bookworm
  DEBIAN_BASE_VERSION ?= bookworm-v1.0.7
  
@@ -179,9 +182,11 @@ index 6bd7ce6c..619f1ecc 100644
  ARCH?=amd64
  ALL_ARCH = amd64 arm arm64 ppc64le s390x
  
-@@ -29,8 +30,9 @@ BASE_REGISTRY?=registry.k8s.io/build-image
+ BASE_REGISTRY?=registry.k8s.io/build-image
  BASEIMAGE?=$(BASE_REGISTRY)/debian-base-$(ARCH):$(DEBIAN_BASE_VERSION)
  
++REGISTRY_SERVICE ?= 127.0.0.1:5000
++
  # Build args
 -QEMUVERSION=7.2.0-1
 +QEMUVERSION ?= 7.2.0-1
@@ -190,16 +195,19 @@ index 6bd7ce6c..619f1ecc 100644
  
  # This option is for running docker manifest command
  export DOCKER_CLI_EXPERIMENTAL := enabled
-@@ -40,7 +42,7 @@ build:
+@@ -40,24 +44,24 @@ build:
  	umask 0022
  
  	# Enable execution of multi-architecture containers
 -	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) --reset -p yes
 +	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) $(QEMUFLAGS)
  	docker buildx version
- 	BUILDER=$(shell docker buildx create --use)
+-	BUILDER=$(shell docker buildx create --use)
++	printf '[registry."%s"]\nhttp = true\ninsecure = true\n' "$(REGISTRY_SERVICE)" > /tmp/buildkitd.toml
++	BUILDER=$(shell tr -dc 'a-zA-Z' < /dev/urandom | head -c 16)
++	docker buildx create --name $BUILDER --use --driver docker-container --driver-opt "network=host" --buildkitd-flags '--allow-insecure-entitlement network.host' --buildkitd-config /tmp/buildkitd.toml
  	docker buildx build \
-@@ -48,16 +50,14 @@ build:
+ 		--pull \
  		--load \
  		--platform linux/$(ARCH) \
  		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION) \
