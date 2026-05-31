@@ -1,0 +1,29 @@
+# Kubernetes Release for LoongArch64
+
+<p align="center">[English](README.md) | [中文](README-zh.md)</p>
+
+<p align="center"><img src="https://img.shields.io/badge/Kubernetes%20LoongArch64%20Release-%E9%BE%99%E8%8A%AF%E6%9E%B6%E6%9E%84%E5%8F%91%E8%A1%8C%E7%89%88-blue" alt="Kubernetes LoongArch64 Release 龙芯架构发行版"></p>
+
+This project builds Kubernetes releases for the **LoongArch64 (loong64)** (龙芯) architecture using CI/CD pipelines based on the upstream [kubernetes/release](https://github.com/kubernetes/release) tooling.
+
+The LoongArch architecture is not yet officially supported by upstream Kubernetes. This project fills that gap by providing pre-built **container images** for **LoongArch64 (loong64)** systems.
+
+## How It Works
+
+1. **Upstream tracking** — This project tracks the [upstream kubernetes/release](https://github.com/kubernetes/release) repository and pulls in changes relevant to **LoongArch64 (loong64)** support.
+2. **CI/CD pipeline** — Automated pipelines build Kubernetes components natively on **LoongArch64 (loong64)** hardware or via cross-compilation.
+3. **Artifacts** — Built container images are published for community use.
+
+## Related Repositories
+
+- [kubernetes/kubernetes](https://github.com/kubernetes/kubernetes) — Upstream Kubernetes source
+- [kubernetes/release](https://github.com/kubernetes/release) — Upstream release tooling
+- [kubernetes/sig-release](https://github.com/kubernetes/sig-release) — Kubernetes SIG Release
+
+## Contributing
+
+Contributions are welcome. Please ensure your changes align with the upstream release process and are specific to **LoongArch64 (loong64)** enablement.
+
+## License
+
+[Apache License 2.0](LICENSE)
