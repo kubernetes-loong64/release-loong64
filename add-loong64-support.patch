@@ -91,6 +91,59 @@ index db1576d0..cb25e4a2 100755
  
  clean:
  	docker rmi -f $(IMAGE)-$(ARCH):$(IMAGE_VERSION) || true
+diff --git a/images/build/distroless-iptables/Makefile b/images/build/distroless-iptables/Makefile
+index b7517313..ffd2ffd0 100644
+--- a/images/build/distroless-iptables/Makefile
++++ b/images/build/distroless-iptables/Makefile
+@@ -23,6 +23,8 @@ CONFIG ?= distroless-bookworm
+ BASEIMAGE ?= debian:bookworm-slim
+ GORUNNER_VERSION ?= v2.4.0-go1.25.9-bookworm.0
+ 
++SERIAL ?= 0
++
+ ARCH?=amd64
+ ALL_ARCH = amd64 arm arm64 ppc64le s390x
+ 
+@@ -30,8 +32,9 @@ BASE_REGISTRY?=registry.k8s.io/build-image
+ 
+ GORUNNERIMAGE?=$(BASE_REGISTRY)/go-runner:$(GORUNNER_VERSION)
+ 
+-QEMUVERSION=7.2.0-1
++QEMUVERSION ?= 7.2.0-1
+ QEMUIMAGE ?= multiarch/qemu-user-static
++QEMUFLAGS ?= --reset -p yes
+ 
+ ifneq ($(ARCH), amd64)
+ 	SKIP_WRAPPER_CHECK=--no-sanity-check
+@@ -47,7 +50,7 @@ build:
+ 	umask 0022
+ 
+ 	# Enable execution of multi-architecture containers
+-	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) --reset -p yes
++	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) $(QEMUFLAGS)
+ 	docker buildx version
+ 	BUILDER=$(shell docker buildx create --use)
+ 	docker buildx build \
+@@ -55,8 +58,7 @@ build:
+ 		--load \
+ 		--platform linux/$(ARCH) \
+ 		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION) \
+-		-t $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG) \
+-		-t $(IMAGE)-$(ARCH):latest-$(CONFIG) \
++		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION)-$(SERIAL) \
+ 		--build-arg=BASEIMAGE=$(BASEIMAGE) \
+ 		--build-arg=GORUNNERIMAGE=$(GORUNNERIMAGE) \
+ 		--build-arg=SKIP_WRAPPER_CHECK=$(SKIP_WRAPPER_CHECK) \
+@@ -65,8 +67,7 @@ build:
+ 
+ push: build
+ 	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)
+-	docker push $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG)
+-	docker push $(IMAGE)-$(ARCH):latest-$(CONFIG)
++	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)-$(SERIAL)
+ 
+ sub-build-%:
+ 	$(MAKE) ARCH=$* build
 diff --git a/images/build/setcap/Makefile b/images/build/setcap/Makefile
 index 6bd7ce6c..619f1ecc 100644
 --- a/images/build/setcap/Makefile
