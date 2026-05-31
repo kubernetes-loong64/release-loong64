@@ -79,6 +79,7 @@ jobs:
           echo "DOCKER_HOST=$DOCKER_HOST"
           docker info
       - name: Login to Docker
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v4
         with:
           username: ${{ vars.DOCKER_USERNAME }}
