@@ -137,6 +137,7 @@ jobs:
             BASE_REGISTRY=${{ env.REGISTRY_NAME }} \
             GORUNNER_VERSION=${{ env.RELEASE_BRANCH }} \
             IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
+            SERIAL=${{ github.run_number }} \
             -C images/build/distroless-iptables
           echo "===== make push completed ====="
           docker images
