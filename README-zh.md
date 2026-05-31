@@ -2,7 +2,7 @@
 
 <p align="center"><a href="README.md">English</a> | <a href="README-zh.md">中文</a></p>
 
-<p align="center"><img src="https://img.shields.io/badge/Kubernetes%20LoongArch64%20Release-%E9%BE%99%E8%8A%AF%E6%9E%B6%E6%9E%84%E5%8F%91%E8%A1%8C%E7%89%88-blue" alt="Kubernetes LoongArch64 Release 龙芯架构发行版"></p>
+<p align="center"><img src="https://img.shields.io/badge/Kubernetes%20Release%20LoongArch64%20%E9%BE%99%E8%8A%AF%E6%9E%B6%E6%9E%84%E5%8F%91%E8%A1%8C%E7%89%88-blue?logo=kubernetes&logoColor=white" alt="Kubernetes Release LoongArch64 龙芯架构发行版"></p>
 
 本项目基于上游 [kubernetes/release](https://github.com/kubernetes/release) 工具链，通过 CI/CD 流水线构建 **LoongArch64 (loong64)**（龙芯）架构的 Kubernetes 发行版。
 
