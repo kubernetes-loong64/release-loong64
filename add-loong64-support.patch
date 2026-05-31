@@ -96,7 +96,7 @@ index db1576d0..cb25e4a2 100755
  clean:
  	docker rmi -f $(IMAGE)-$(ARCH):$(IMAGE_VERSION) || true
 diff --git a/images/build/distroless-iptables/Makefile b/images/build/distroless-iptables/Makefile
-index b7517313..ffd2ffd0 100644
+index b7517313..bdd74d24 100644
 --- a/images/build/distroless-iptables/Makefile
 +++ b/images/build/distroless-iptables/Makefile
 @@ -23,6 +23,8 @@ CONFIG ?= distroless-bookworm
@@ -119,16 +119,18 @@ index b7517313..ffd2ffd0 100644
  
  ifneq ($(ARCH), amd64)
  	SKIP_WRAPPER_CHECK=--no-sanity-check
-@@ -47,7 +50,7 @@ build:
+@@ -47,16 +50,16 @@ build:
  	umask 0022
  
  	# Enable execution of multi-architecture containers
 -	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) --reset -p yes
 +	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) $(QEMUFLAGS)
  	docker buildx version
- 	BUILDER=$(shell docker buildx create --use)
+-	BUILDER=$(shell docker buildx create --use)
++	BUILDER=$(tr -dc 'a-zA-Z' < /dev/urandom | head -c 16)
++	docker buildx create --name $BUILDER --use --driver docker-container --driver-opt "network=host" --buildkitd-flags '--allow-insecure-entitlement network.host' --buildkitd-config /tmp/buildkitd.toml
  	docker buildx build \
-@@ -55,8 +58,7 @@ build:
+ 		--pull \
  		--load \
  		--platform linux/$(ARCH) \
  		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION) \
@@ -138,7 +140,7 @@ index b7517313..ffd2ffd0 100644
  		--build-arg=BASEIMAGE=$(BASEIMAGE) \
  		--build-arg=GORUNNERIMAGE=$(GORUNNERIMAGE) \
  		--build-arg=SKIP_WRAPPER_CHECK=$(SKIP_WRAPPER_CHECK) \
-@@ -65,8 +67,7 @@ build:
+@@ -65,8 +68,7 @@ build:
  
  push: build
  	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)
