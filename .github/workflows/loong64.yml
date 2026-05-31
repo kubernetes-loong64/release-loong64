@@ -91,6 +91,7 @@ jobs:
             BASEIMAGE=ghcr.io/loong64/debian:trixie-slim \
             REGISTRY=${{ env.REGISTRY_NAME }} \
             IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
+            SERIAL=${{ env.GITHUB_RUN_NUMBER }} \
             -C images/build/debian-base
           echo "===== make push completed ====="
           docker images

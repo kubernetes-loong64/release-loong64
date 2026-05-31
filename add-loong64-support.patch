@@ -1,9 +1,12 @@
 diff --git a/images/build/debian-base/Makefile b/images/build/debian-base/Makefile
-index db1576d0..f82b2e82 100755
+index db1576d0..cb25e4a2 100755
 --- a/images/build/debian-base/Makefile
 +++ b/images/build/debian-base/Makefile
-@@ -24,10 +24,11 @@ CONFIG ?= bookworm
+@@ -22,12 +22,14 @@ TAG ?= $(shell git describe --tags --always --dirty)
+ IMAGE_VERSION ?= bookworm-v1.0.7
+ CONFIG ?= bookworm
  
++SERIAL ?= 0
  TAR_FILE ?= rootfs.tar
  ARCH ?= amd64
 -ALL_ARCH = amd64 arm arm64 ppc64le s390x
@@ -16,7 +19,7 @@ index db1576d0..f82b2e82 100755
  
  # This option is for running docker manifest command
  export DOCKER_CLI_EXPERIMENTAL := enabled
-@@ -52,6 +53,10 @@ ifeq ($(ARCH),s390x)
+@@ -52,6 +54,10 @@ ifeq ($(ARCH),s390x)
  	BASEIMAGE?=s390x/debian:$(CONFIG)-slim
  	QEMUARCH=s390x
  endif
@@ -27,7 +30,7 @@ index db1576d0..f82b2e82 100755
  
  sub-build-%:
  	$(MAKE) ARCH=$* build
-@@ -75,7 +80,7 @@ build: clean
+@@ -75,7 +81,7 @@ build: clean
  	umask 0022
  
  	# Enable execution of multi-architecture containers
@@ -36,12 +39,13 @@ index db1576d0..f82b2e82 100755
  	docker buildx version
  	BUILDER=$(shell docker buildx create --use)
  
-@@ -94,16 +99,12 @@ build: clean
+@@ -94,16 +100,14 @@ build: clean
  		--load \
  		--platform linux/$(ARCH) \
  		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION) \
 -		-t $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG) \
 -		-t $(IMAGE)-$(ARCH):latest-$(CONFIG) \
++		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION)-$(SERIAL) \
  		$(CONFIG)
  	docker buildx rm $$BUILDER
  	rm $(CONFIG)/rootfs.tar
@@ -50,6 +54,7 @@ index db1576d0..f82b2e82 100755
  	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)
 -	docker push $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG)
 -	docker push $(IMAGE)-$(ARCH):latest-$(CONFIG)
++	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)-$(SERIAL)
  
  clean:
  	docker rmi -f $(IMAGE)-$(ARCH):$(IMAGE_VERSION) || true
