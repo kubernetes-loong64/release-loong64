@@ -15,6 +15,11 @@ jobs:
     container: debian:13
     permissions:
       contents: read
+    services:
+      registry:
+        image: registry:3.1.1
+        ports:
+          - 5000:5000
     env:
       REGISTRY_NAME: ${{ vars.REGISTRY_NAME || 'kubernetesloong64' }}
     steps:
