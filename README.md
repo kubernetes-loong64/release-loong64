@@ -14,6 +14,10 @@ The LoongArch architecture is not yet officially supported by upstream Kubernete
 2. **CI/CD pipeline** — Automated pipelines build Kubernetes components natively on **LoongArch64 (loong64)** hardware or via cross-compilation.
 3. **Artifacts** — Built container images are published for community use.
 
+## Branch naming
+
+Push a branch named `loong64/<release-version>` (e.g. `loong64/v0.21.1`) to trigger a build.
+
 ## Container Images
 
 These images are built from [kubernetes/release](https://github.com/kubernetes/release) for **LoongArch64 (loong64)**. Image tags are the same as the upstream git tags.
