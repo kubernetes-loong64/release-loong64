@@ -131,6 +131,7 @@ jobs:
           docker images
           echo "===== Starting make push ====="
           make push \
+            ARCH=loong64 \
             -C images/build/distroless-iptables
           echo "===== make push completed ====="
           docker images
