@@ -83,6 +83,6 @@ jobs:
         run: |
           docker images
           echo "===== Starting make push ====="
-          make push -C images/build/debian-base
+          make push ARCH=loong64 -C images/build/debian-base
           echo "===== make push completed ====="
           docker images
