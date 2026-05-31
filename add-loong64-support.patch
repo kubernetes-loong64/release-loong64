@@ -168,7 +168,7 @@ index 8e263ac0..0aeef19b 100644
  # iptables-wrapper-installer needs to know that iptables exists before doing all its magic
  RUN echo "" >  /usr/sbin/iptables && \
 diff --git a/images/build/setcap/Makefile b/images/build/setcap/Makefile
-index 6bd7ce6c..008b4f32 100644
+index 6bd7ce6c..ede53a05 100644
 --- a/images/build/setcap/Makefile
 +++ b/images/build/setcap/Makefile
 @@ -22,15 +22,19 @@ IMAGE_VERSION ?= bookworm-v1.0.7
@@ -192,7 +192,7 @@ index 6bd7ce6c..008b4f32 100644
  
  # This option is for running docker manifest command
  export DOCKER_CLI_EXPERIMENTAL := enabled
-@@ -40,24 +44,27 @@ build:
+@@ -40,24 +44,23 @@ build:
  	umask 0022
  
  	# Enable execution of multi-architecture containers
@@ -200,11 +200,7 @@ index 6bd7ce6c..008b4f32 100644
 +	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) $(QEMUFLAGS)
  	docker buildx version
 -	BUILDER=$(shell docker buildx create --use)
-+	cat > /tmp/buildkitd.toml <<EOF
-+	[registry.$REGISTRY_SERVICE]
-+	http = true
-+	insecure = true
-+	EOF
++	printf '[registry.%s]\nhttp = true\ninsecure = true\n' "$(REGISTRY_SERVICE)" > /tmp/buildkitd.toml
 +	BUILDER=$(shell docker buildx create --use --driver docker-container --driver-opt "network=host" --buildkitd-flags '--allow-insecure-entitlement network.host' --buildkitd-config /tmp/buildkitd.toml)
  	docker buildx build \
  		--pull \
