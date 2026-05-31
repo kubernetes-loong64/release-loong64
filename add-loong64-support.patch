@@ -96,7 +96,7 @@ index db1576d0..cb25e4a2 100755
  clean:
  	docker rmi -f $(IMAGE)-$(ARCH):$(IMAGE_VERSION) || true
 diff --git a/images/build/distroless-iptables/Makefile b/images/build/distroless-iptables/Makefile
-index b7517313..17caef6f 100644
+index b7517313..18c5207d 100644
 --- a/images/build/distroless-iptables/Makefile
 +++ b/images/build/distroless-iptables/Makefile
 @@ -23,6 +23,8 @@ CONFIG ?= distroless-bookworm
@@ -128,8 +128,8 @@ index b7517313..17caef6f 100644
  	docker buildx version
 -	BUILDER=$(shell docker buildx create --use)
 +	printf '[registry."%s"]\nhttp = true\ninsecure = true\n' "$(REGISTRY_SERVICE)" > /tmp/buildkitd.toml
-+	BUILDER=$(tr -dc 'a-zA-Z' < /dev/urandom | head -c 16)
-+	docker buildx create --name $BUILDER --use --driver docker-container --driver-opt "network=host" --buildkitd-flags '--allow-insecure-entitlement network.host' --buildkitd-config /tmp/buildkitd.toml
++	BUILDER=$(shell tr -dc 'a-zA-Z' < /dev/urandom | head -c 16)
++	docker buildx create --name $$BUILDER --use --driver docker-container --driver-opt "network=host" --buildkitd-flags '--allow-insecure-entitlement network.host' --buildkitd-config /tmp/buildkitd.toml
  	docker buildx build \
  		--pull \
  		--load \
@@ -171,7 +171,7 @@ index 8e263ac0..0aeef19b 100644
  # iptables-wrapper-installer needs to know that iptables exists before doing all its magic
  RUN echo "" >  /usr/sbin/iptables && \
 diff --git a/images/build/setcap/Makefile b/images/build/setcap/Makefile
-index 6bd7ce6c..efc4c714 100644
+index 6bd7ce6c..b5629562 100644
 --- a/images/build/setcap/Makefile
 +++ b/images/build/setcap/Makefile
 @@ -22,15 +22,19 @@ IMAGE_VERSION ?= bookworm-v1.0.7
@@ -204,8 +204,8 @@ index 6bd7ce6c..efc4c714 100644
  	docker buildx version
 -	BUILDER=$(shell docker buildx create --use)
 +	printf '[registry."%s"]\nhttp = true\ninsecure = true\n' "$(REGISTRY_SERVICE)" > /tmp/buildkitd.toml
-+	BUILDER=$(tr -dc 'a-zA-Z' < /dev/urandom | head -c 16)
-+	docker buildx create --name $BUILDER --use --driver docker-container --driver-opt "network=host" --buildkitd-flags '--allow-insecure-entitlement network.host' --buildkitd-config /tmp/buildkitd.toml
++	BUILDER=$(shell tr -dc 'a-zA-Z' < /dev/urandom | head -c 16)
++	docker buildx create --name $$BUILDER --use --driver docker-container --driver-opt "network=host" --buildkitd-flags '--allow-insecure-entitlement network.host' --buildkitd-config /tmp/buildkitd.toml
  	docker buildx build \
  		--pull \
  		--load \
