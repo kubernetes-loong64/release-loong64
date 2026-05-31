@@ -117,6 +117,8 @@ jobs:
           echo "===== Starting make push ====="
           make push \
             REGISTRY=${{ env.REGISTRY_NAME }} \
+            IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
+            SERIAL=${{ github.run_number }} \
             -C images/build/go-runner
           echo "===== make push completed ====="
           docker images
