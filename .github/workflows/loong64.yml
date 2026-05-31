@@ -123,7 +123,7 @@ jobs:
         run: |
           docker images
           echo "===== Starting make push ====="
-          make all-push \
+          make ALL_ARCH="amd64 loong64" all-push \
             QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
             REGISTRY=${{ env.REGISTRY_NAME }} \
             IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
