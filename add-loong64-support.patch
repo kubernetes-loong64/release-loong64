@@ -1,5 +1,5 @@
 diff --git a/images/build/debian-base/Makefile b/images/build/debian-base/Makefile
-index db1576d0..6f7a8d73 100755
+index db1576d0..f82b2e82 100755
 --- a/images/build/debian-base/Makefile
 +++ b/images/build/debian-base/Makefile
 @@ -24,10 +24,11 @@ CONFIG ?= bookworm
@@ -36,3 +36,20 @@ index db1576d0..6f7a8d73 100755
  	docker buildx version
  	BUILDER=$(shell docker buildx create --use)
  
+@@ -94,16 +99,12 @@ build: clean
+ 		--load \
+ 		--platform linux/$(ARCH) \
+ 		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION) \
+-		-t $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG) \
+-		-t $(IMAGE)-$(ARCH):latest-$(CONFIG) \
+ 		$(CONFIG)
+ 	docker buildx rm $$BUILDER
+ 	rm $(CONFIG)/rootfs.tar
+ 
+ push: build
+ 	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)
+-	docker push $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG)
+-	docker push $(IMAGE)-$(ARCH):latest-$(CONFIG)
+ 
+ clean:
+ 	docker rmi -f $(IMAGE)-$(ARCH):$(IMAGE_VERSION) || true
