@@ -86,6 +86,6 @@ jobs:
         run: |
           docker images
           echo "===== Starting make push ====="
-          make push ARCH=loong64 QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest BASEIMAGE=ghcr.io/loong64/debian:trixie-slim -C images/build/debian-base
+          make push ARCH=loong64 QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= BASEIMAGE=ghcr.io/loong64/debian:trixie-slim -C images/build/debian-base
           echo "===== make push completed ====="
           docker images

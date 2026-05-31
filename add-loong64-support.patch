@@ -1,8 +1,8 @@
 diff --git a/images/build/debian-base/Makefile b/images/build/debian-base/Makefile
-index db1576d0..218d589e 100755
+index db1576d0..6f7a8d73 100755
 --- a/images/build/debian-base/Makefile
 +++ b/images/build/debian-base/Makefile
-@@ -24,9 +24,9 @@ CONFIG ?= bookworm
+@@ -24,10 +24,11 @@ CONFIG ?= bookworm
  
  TAR_FILE ?= rootfs.tar
  ARCH ?= amd64
@@ -12,9 +12,11 @@ index db1576d0..218d589e 100755
 -QEMUVERSION=7.2.0-1
 +QEMUVERSION ?= 7.2.0-1
  QEMUIMAGE ?= multiarch/qemu-user-static
++QEMUFLAGS ?= --reset -p yes
  
  # This option is for running docker manifest command
-@@ -52,6 +52,10 @@ ifeq ($(ARCH),s390x)
+ export DOCKER_CLI_EXPERIMENTAL := enabled
+@@ -52,6 +53,10 @@ ifeq ($(ARCH),s390x)
  	BASEIMAGE?=s390x/debian:$(CONFIG)-slim
  	QEMUARCH=s390x
  endif
@@ -25,3 +27,12 @@ index db1576d0..218d589e 100755
  
  sub-build-%:
  	$(MAKE) ARCH=$* build
+@@ -75,7 +80,7 @@ build: clean
+ 	umask 0022
+ 
+ 	# Enable execution of multi-architecture containers
+-	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) --reset -p yes
++	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) $(QEMUFLAGS)
+ 	docker buildx version
+ 	BUILDER=$(shell docker buildx create --use)
+ 
