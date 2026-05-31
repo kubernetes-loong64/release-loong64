@@ -168,7 +168,7 @@ index 8e263ac0..0aeef19b 100644
  # iptables-wrapper-installer needs to know that iptables exists before doing all its magic
  RUN echo "" >  /usr/sbin/iptables && \
 diff --git a/images/build/setcap/Makefile b/images/build/setcap/Makefile
-index 6bd7ce6c..8c397377 100644
+index 6bd7ce6c..3b48e8ed 100644
 --- a/images/build/setcap/Makefile
 +++ b/images/build/setcap/Makefile
 @@ -22,6 +22,7 @@ IMAGE_VERSION ?= bookworm-v1.0.7
@@ -201,7 +201,7 @@ index 6bd7ce6c..8c397377 100644
  	docker buildx build \
  		--pull \
  		--load \
-+		--network=host \
++		--driver-opt network=host \
  		--platform linux/$(ARCH) \
  		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION) \
 -		-t $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG) \
