@@ -177,8 +177,7 @@ jobs:
           make push \
             ARCH=${{ matrix.arch }} QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
             REGISTRY=${{ env.REGISTRY_NAME }} \
-            BASE_REGISTRY=${{ env.REGISTRY_NAME }} \
-            GORUNNER_VERSION=${{ env.RELEASE_BRANCH }} \
+            GORUNNERIMAGE=${{ env.REGISTRY_NAME }}/go-runner-${{ matrix.arch }}:${{ env.RELEASE_BRANCH }} \
             IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
             SERIAL=${{ github.run_number }} \
             -C images/build/distroless-iptables
