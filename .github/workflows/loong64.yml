@@ -117,6 +117,8 @@ jobs:
           echo "===== Starting make push ====="
           make push \
             PLATFORMS=linux/loong64 \
+            DISTROLESS_REGISTRY=ghcr.io/loong64 \
+            DISTROLESS_IMAGE=debian:trixie-slim \
             REGISTRY=${{ env.REGISTRY_NAME }} \
             IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
             SERIAL=${{ github.run_number }} \
