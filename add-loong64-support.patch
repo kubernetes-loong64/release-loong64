@@ -36,7 +36,7 @@ index 9b08ccaf..b58a7b61 100644
  
  .PHONY: manifest
 diff --git a/images/build/debian-base/Makefile b/images/build/debian-base/Makefile
-index db1576d0..da0be2ae 100755
+index db1576d0..e2d78c0a 100755
 --- a/images/build/debian-base/Makefile
 +++ b/images/build/debian-base/Makefile
 @@ -22,12 +22,14 @@ TAG ?= $(shell git describe --tags --always --dirty)
@@ -61,7 +61,7 @@ index db1576d0..da0be2ae 100755
  	QEMUARCH=s390x
  endif
 +ifeq ($(ARCH),loong64)
-+	BASEIMAGE?=loong64/debian:$(CONFIG)-slim
++	BASEIMAGE?=ghcr.io/loong64/debian:trixie-slim
 +	QEMUARCH=loongarch64
 +endif
  
