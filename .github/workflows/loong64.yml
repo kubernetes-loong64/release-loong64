@@ -78,6 +78,9 @@ jobs:
       #  with:
       #    username: ${{ vars.DOCKER_USERNAME }}
       #    password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Apply patches
+        working-directory: release
+        run: git apply ../*.patch
       - name: Build release debian-base
         working-directory: release
         run: |

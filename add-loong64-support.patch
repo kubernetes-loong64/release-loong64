@@ -1,0 +1,24 @@
+diff --git a/images/build/debian-base/Makefile b/images/build/debian-base/Makefile
+index db1576d0..88091e68 100755
+--- a/images/build/debian-base/Makefile
++++ b/images/build/debian-base/Makefile
+@@ -24,7 +24,7 @@ CONFIG ?= bookworm
+ 
+ TAR_FILE ?= rootfs.tar
+ ARCH ?= amd64
+-ALL_ARCH = amd64 arm arm64 ppc64le s390x
++ALL_ARCH = amd64 arm arm64 ppc64le s390x loong64
+ 
+ QEMUVERSION=7.2.0-1
+ QEMUIMAGE ?= multiarch/qemu-user-static
+@@ -52,6 +52,10 @@ ifeq ($(ARCH),s390x)
+ 	BASEIMAGE?=s390x/debian:$(CONFIG)-slim
+ 	QEMUARCH=s390x
+ endif
++ifeq ($(ARCH),loong64)
++	BASEIMAGE?=loong64/debian:$(CONFIG)-slim
++	QEMUARCH=loongarch64
++endif
+ 
+ sub-build-%:
+ 	$(MAKE) ARCH=$* build
