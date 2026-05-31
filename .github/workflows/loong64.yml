@@ -127,8 +127,7 @@ jobs:
           docker images
           echo "===== Starting make push ====="
           make push \
-            ARCH=${{ matrix.arch }} \
-            QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
+            ARCH=${{ matrix.arch }} QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
             REGISTRY=${{ env.REGISTRY_NAME }} \
             IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
             SERIAL=${{ github.run_number }} \
@@ -153,12 +152,14 @@ jobs:
       - name: Build release go-runner
         working-directory: release
         run: |
+          if [ "${{ matrix.arch }}" = "loong64" ]; then
+            export DISTROLESS_REGISTRY=ghcr.io/loong64
+            export DISTROLESS_IMAGE=debian:trixie-slim
+          fi
           docker images
           echo "===== Starting make push ====="
           make push \
             PLATFORMS=linux/${{ matrix.arch }} \
-            DISTROLESS_REGISTRY=ghcr.io/loong64 \
-            DISTROLESS_IMAGE=debian:trixie-slim \
             REGISTRY=${{ env.REGISTRY_NAME }} \
             IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
             SERIAL=${{ github.run_number }} \
@@ -170,9 +171,11 @@ jobs:
         run: |
           docker images
           echo "===== Starting make push ====="
+          if [ "${{ matrix.arch }}" = "loong64" ]; then
+            export BASEIMAGE=ghcr.io/loong64/debian:trixie-slim
+          fi
           make push \
             ARCH=${{ matrix.arch }} QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
-            BASEIMAGE=ghcr.io/loong64/debian:trixie-slim \
             REGISTRY=${{ env.REGISTRY_NAME }} \
             BASE_REGISTRY=${{ env.REGISTRY_NAME }} \
             GORUNNER_VERSION=${{ env.RELEASE_BRANCH }} \
