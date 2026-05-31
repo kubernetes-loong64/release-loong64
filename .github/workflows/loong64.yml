@@ -101,6 +101,12 @@ jobs:
           docker images
           echo "===== Starting make push ====="
           make push \
+            ARCH=loong64 QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
+            DEBIAN_BASE_VERSION=${{ env.RELEASE_BRANCH }} \
+            REGISTRY=${{ env.REGISTRY_NAME }} \
+            BASE_REGISTRY=${{ env.REGISTRY_NAME }} \
+            IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
+            SERIAL=${{ github.run_number }} \
             -C images/build/setcap
           echo "===== make push completed ====="
           docker images

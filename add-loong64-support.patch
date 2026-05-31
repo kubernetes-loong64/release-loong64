@@ -58,3 +58,54 @@ index db1576d0..cb25e4a2 100755
  
  clean:
  	docker rmi -f $(IMAGE)-$(ARCH):$(IMAGE_VERSION) || true
+diff --git a/images/build/setcap/Makefile b/images/build/setcap/Makefile
+index 6bd7ce6c..619f1ecc 100644
+--- a/images/build/setcap/Makefile
++++ b/images/build/setcap/Makefile
+@@ -22,6 +22,7 @@ IMAGE_VERSION ?= bookworm-v1.0.7
+ CONFIG ?= bookworm
+ DEBIAN_BASE_VERSION ?= bookworm-v1.0.7
+ 
++SERIAL ?= 0
+ ARCH?=amd64
+ ALL_ARCH = amd64 arm arm64 ppc64le s390x
+ 
+@@ -29,8 +30,9 @@ BASE_REGISTRY?=registry.k8s.io/build-image
+ BASEIMAGE?=$(BASE_REGISTRY)/debian-base-$(ARCH):$(DEBIAN_BASE_VERSION)
+ 
+ # Build args
+-QEMUVERSION=7.2.0-1
++QEMUVERSION ?= 7.2.0-1
+ QEMUIMAGE ?= multiarch/qemu-user-static
++QEMUFLAGS ?= --reset -p yes
+ 
+ # This option is for running docker manifest command
+ export DOCKER_CLI_EXPERIMENTAL := enabled
+@@ -40,7 +42,7 @@ build:
+ 	umask 0022
+ 
+ 	# Enable execution of multi-architecture containers
+-	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) --reset -p yes
++	docker run --rm --privileged $(QEMUIMAGE):$(QEMUVERSION) $(QEMUFLAGS)
+ 	docker buildx version
+ 	BUILDER=$(shell docker buildx create --use)
+ 	docker buildx build \
+@@ -48,16 +50,14 @@ build:
+ 		--load \
+ 		--platform linux/$(ARCH) \
+ 		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION) \
+-		-t $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG) \
+-		-t $(IMAGE)-$(ARCH):latest-$(CONFIG) \
++		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION)-$(SERIAL) \
+ 		--build-arg=BASEIMAGE=$(BASEIMAGE) \
+ 		.
+ 	docker buildx rm $$BUILDER
+ 
+ push: build
+ 	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)
+-	docker push $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG)
+-	docker push $(IMAGE)-$(ARCH):latest-$(CONFIG)
++	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)-$(SERIAL)
+ 
+ sub-build-%:
+ 	$(MAKE) ARCH=$* build
