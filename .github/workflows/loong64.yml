@@ -116,6 +116,7 @@ jobs:
           docker images
           echo "===== Starting make push ====="
           make push \
+            REGISTRY=${{ env.REGISTRY_NAME }} \
             -C images/build/go-runner
           echo "===== make push completed ====="
           docker images
