@@ -116,6 +116,7 @@ jobs:
           docker images
           echo "===== Starting make push ====="
           make push \
+            PLATFORMS=linux/loong64 \
             REGISTRY=${{ env.REGISTRY_NAME }} \
             IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
             SERIAL=${{ github.run_number }} \
