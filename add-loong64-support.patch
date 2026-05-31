@@ -148,6 +148,19 @@ index b7517313..ffd2ffd0 100644
  
  sub-build-%:
  	$(MAKE) ARCH=$* build
+diff --git a/images/build/distroless-iptables/distroless-bookworm/Dockerfile b/images/build/distroless-iptables/distroless-bookworm/Dockerfile
+index 8e263ac0..f9ed28b2 100644
+--- a/images/build/distroless-iptables/distroless-bookworm/Dockerfile
++++ b/images/build/distroless-iptables/distroless-bookworm/Dockerfile
+@@ -51,7 +51,7 @@ FROM ${GORUNNERIMAGE} as gorunner
+ 
+ # We need to use distroless:base here as tzdata, glibc and some other base packages
+ # are required
+-FROM gcr.io/distroless/base-debian12 as intermediate
++FROM ghcr.io/loong64/debian:trixie-slim as intermediate
+ 
+ ARG SKIP_WRAPPER_CHECK
+ 
 diff --git a/images/build/setcap/Makefile b/images/build/setcap/Makefile
 index 6bd7ce6c..619f1ecc 100644
 --- a/images/build/setcap/Makefile
