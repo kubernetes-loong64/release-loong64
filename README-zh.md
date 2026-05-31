@@ -1,6 +1,6 @@
 # Kubernetes Release for LoongArch64
 
-<p align="center">[English](README.md) | [中文](README-zh.md)</p>
+<p align="center"><a href="README.md">English</a> | <a href="README-zh.md">中文</a></p>
 
 <p align="center"><img src="https://img.shields.io/badge/Kubernetes%20LoongArch64%20Release-%E9%BE%99%E8%8A%AF%E6%9E%B6%E6%9E%84%E5%8F%91%E8%A1%8C%E7%89%88-blue" alt="Kubernetes LoongArch64 Release 龙芯架构发行版"></p>
 
@@ -13,6 +13,15 @@
 1. **上游跟踪** — 本项目跟踪 [上游 kubernetes/release](https://github.com/kubernetes/release) 仓库，并引入与 **LoongArch64 (loong64)** 支持相关的变更。
 2. **CI/CD 流水线** — 自动化流水线在 **LoongArch64 (loong64)** 硬件上原生构建或通过交叉编译生成 Kubernetes 组件。
 3. **产物发布** — 构建好的容器镜像将发布供社区使用。
+
+## 容器镜像
+
+这些镜像由 [kubernetes/release](https://github.com/kubernetes/release) 为 **LoongArch64 (loong64)** 构建，镜像标签与上游 git 标签一致。
+
+- [![kubernetesloong64/debian-base](https://img.shields.io/docker/v/kubernetesloong64/debian-base?logo=docker&label=kubernetesloong64%2Fdebian-base)](https://hub.docker.com/r/kubernetesloong64/debian-base/tags)
+- [![kubernetesloong64/distroless-iptables](https://img.shields.io/docker/v/kubernetesloong64/distroless-iptables?logo=docker&label=kubernetesloong64%2Fdistroless-iptables)](https://hub.docker.com/r/kubernetesloong64/distroless-iptables/tags)
+- [![kubernetesloong64/go-runner](https://img.shields.io/docker/v/kubernetesloong64/go-runner?logo=docker&label=kubernetesloong64%2Fgo-runner)](https://hub.docker.com/r/kubernetesloong64/go-runner/tags)
+- [![kubernetesloong64/setcap](https://img.shields.io/docker/v/kubernetesloong64/setcap?logo=docker&label=kubernetesloong64%2Fsetcap)](https://hub.docker.com/r/kubernetesloong64/setcap/tags)
 
 ## 相关仓库
 
