@@ -20,7 +20,10 @@
 
 ## 容器镜像
 
-这些镜像由 [kubernetes/release](https://github.com/kubernetes/release) 为 **LoongArch64 (loong64)** 构建，镜像标签与上游 git 标签一致。
+这些镜像由 [kubernetes/release](https://github.com/kubernetes/release) 为 **LoongArch64 (loong64)** 构建。
+
+1. 镜像标签带 `-<数字>` 后缀（如 `v0.21.1-1`、`v0.21.1-2`）的是 CI/CD 构建序号，依次递增，整个项目唯一，仅作为历史版本保留。
+2. 使用不带 `-<数字>` 的 `vX.Y.Z` 版本号即可获取该版本的最新构建。
 
 - [![kubernetesloong64/debian-base](https://img.shields.io/docker/v/kubernetesloong64/debian-base?logo=docker&label=kubernetesloong64%2Fdebian-base)](https://hub.docker.com/r/kubernetesloong64/debian-base/tags)
 - [![kubernetesloong64/distroless-iptables](https://img.shields.io/docker/v/kubernetesloong64/distroless-iptables?logo=docker&label=kubernetesloong64%2Fdistroless-iptables)](https://hub.docker.com/r/kubernetesloong64/distroless-iptables/tags)

@@ -20,7 +20,10 @@ Push a branch named `loong64/<release-version>` (e.g. `loong64/v0.21.1`) to trig
 
 ## Container Images
 
-These images are built from [kubernetes/release](https://github.com/kubernetes/release) for **LoongArch64 (loong64)**. Image tags are the same as the upstream git tags.
+These images are built from [kubernetes/release](https://github.com/kubernetes/release) for **LoongArch64 (loong64)**.
+
+1. Image tags with a `-<number>` suffix (e.g. `v0.21.1-1`, `v0.21.1-2`) are CI/CD build sequence numbers, unique across the project, kept as historical versions.
+2. Use the plain `vX.Y.Z` tag (without the `-<number>` suffix) to get the latest build of that version.
 
 - [![kubernetesloong64/debian-base](https://img.shields.io/docker/v/kubernetesloong64/debian-base?logo=docker&label=kubernetesloong64%2Fdebian-base)](https://hub.docker.com/r/kubernetesloong64/debian-base/tags)
 - [![kubernetesloong64/distroless-iptables](https://img.shields.io/docker/v/kubernetesloong64/distroless-iptables?logo=docker&label=kubernetesloong64%2Fdistroless-iptables)](https://hub.docker.com/r/kubernetesloong64/distroless-iptables/tags)
