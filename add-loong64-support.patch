@@ -36,7 +36,7 @@ index 9b08ccaf..b58a7b61 100644
  
  .PHONY: manifest
 diff --git a/images/build/debian-base/Makefile b/images/build/debian-base/Makefile
-index db1576d0..cb25e4a2 100755
+index db1576d0..da0be2ae 100755
 --- a/images/build/debian-base/Makefile
 +++ b/images/build/debian-base/Makefile
 @@ -22,12 +22,14 @@ TAG ?= $(shell git describe --tags --always --dirty)
@@ -76,13 +76,15 @@ index db1576d0..cb25e4a2 100755
  	docker buildx version
  	BUILDER=$(shell docker buildx create --use)
  
-@@ -94,16 +100,14 @@ build: clean
+@@ -94,16 +100,18 @@ build: clean
  		--load \
  		--platform linux/$(ARCH) \
  		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION) \
 -		-t $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG) \
 -		-t $(IMAGE)-$(ARCH):latest-$(CONFIG) \
 +		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION)-$(SERIAL) \
++		-t $(IMAGE):$(IMAGE_VERSION) \
++		-t $(IMAGE):$(IMAGE_VERSION)-$(SERIAL) \
  		$(CONFIG)
  	docker buildx rm $$BUILDER
  	rm $(CONFIG)/rootfs.tar
@@ -92,11 +94,13 @@ index db1576d0..cb25e4a2 100755
 -	docker push $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG)
 -	docker push $(IMAGE)-$(ARCH):latest-$(CONFIG)
 +	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)-$(SERIAL)
++	docker push $(IMAGE):$(IMAGE_VERSION)
++	docker push $(IMAGE):$(IMAGE_VERSION)-$(SERIAL)
  
  clean:
  	docker rmi -f $(IMAGE)-$(ARCH):$(IMAGE_VERSION) || true
 diff --git a/images/build/distroless-iptables/Makefile b/images/build/distroless-iptables/Makefile
-index b7517313..4770e2a1 100644
+index b7517313..33bd7f5b 100644
 --- a/images/build/distroless-iptables/Makefile
 +++ b/images/build/distroless-iptables/Makefile
 @@ -23,6 +23,8 @@ CONFIG ?= distroless-bookworm
@@ -119,7 +123,7 @@ index b7517313..4770e2a1 100644
  
  ifneq ($(ARCH), amd64)
  	SKIP_WRAPPER_CHECK=--no-sanity-check
-@@ -47,16 +50,17 @@ build:
+@@ -47,16 +50,19 @@ build:
  	umask 0022
  
  	# Enable execution of multi-architecture containers
@@ -138,16 +142,20 @@ index b7517313..4770e2a1 100644
 -		-t $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG) \
 -		-t $(IMAGE)-$(ARCH):latest-$(CONFIG) \
 +		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION)-$(SERIAL) \
++		-t $(IMAGE):$(IMAGE_VERSION) \
++		-t $(IMAGE):$(IMAGE_VERSION)-$(SERIAL) \
  		--build-arg=BASEIMAGE=$(BASEIMAGE) \
  		--build-arg=GORUNNERIMAGE=$(GORUNNERIMAGE) \
  		--build-arg=SKIP_WRAPPER_CHECK=$(SKIP_WRAPPER_CHECK) \
-@@ -65,8 +69,7 @@ build:
+@@ -65,8 +71,9 @@ build:
  
  push: build
  	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)
 -	docker push $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG)
 -	docker push $(IMAGE)-$(ARCH):latest-$(CONFIG)
 +	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)-$(SERIAL)
++	docker push $(IMAGE):$(IMAGE_VERSION)
++	docker push $(IMAGE):$(IMAGE_VERSION)-$(SERIAL)
  
  sub-build-%:
  	$(MAKE) ARCH=$* build
@@ -171,7 +179,7 @@ index 8e263ac0..0aeef19b 100644
  # iptables-wrapper-installer needs to know that iptables exists before doing all its magic
  RUN echo "" >  /usr/sbin/iptables && \
 diff --git a/images/build/setcap/Makefile b/images/build/setcap/Makefile
-index 6bd7ce6c..4af030e4 100644
+index 6bd7ce6c..242694d7 100644
 --- a/images/build/setcap/Makefile
 +++ b/images/build/setcap/Makefile
 @@ -22,15 +22,19 @@ IMAGE_VERSION ?= bookworm-v1.0.7
@@ -195,7 +203,7 @@ index 6bd7ce6c..4af030e4 100644
  
  # This option is for running docker manifest command
  export DOCKER_CLI_EXPERIMENTAL := enabled
-@@ -40,24 +44,24 @@ build:
+@@ -40,24 +44,28 @@ build:
  	umask 0022
  
  	# Enable execution of multi-architecture containers
@@ -214,6 +222,8 @@ index 6bd7ce6c..4af030e4 100644
 -		-t $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG) \
 -		-t $(IMAGE)-$(ARCH):latest-$(CONFIG) \
 +		-t $(IMAGE)-$(ARCH):$(IMAGE_VERSION)-$(SERIAL) \
++		-t $(IMAGE):$(IMAGE_VERSION) \
++		-t $(IMAGE):$(IMAGE_VERSION)-$(SERIAL) \
  		--build-arg=BASEIMAGE=$(BASEIMAGE) \
  		.
  	docker buildx rm $$BUILDER
@@ -223,6 +233,8 @@ index 6bd7ce6c..4af030e4 100644
 -	docker push $(IMAGE)-$(ARCH):$(TAG)-$(CONFIG)
 -	docker push $(IMAGE)-$(ARCH):latest-$(CONFIG)
 +	docker push $(IMAGE)-$(ARCH):$(IMAGE_VERSION)-$(SERIAL)
++	docker push $(IMAGE):$(IMAGE_VERSION)
++	docker push $(IMAGE):$(IMAGE_VERSION)-$(SERIAL)
  
  sub-build-%:
  	$(MAKE) ARCH=$* build
