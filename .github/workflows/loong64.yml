@@ -13,6 +13,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: debian:13
+    strategy:
+      matrix:
+        arch: [ amd64, loong64 ]
     permissions:
       contents: read
     services:
@@ -123,7 +126,8 @@ jobs:
         run: |
           docker images
           echo "===== Starting make push ====="
-          make ALL_ARCH="amd64 loong64" all-push \
+          make push \
+            ARCH=${{ matrix.arch }} \
             QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
             REGISTRY=${{ env.REGISTRY_NAME }} \
             IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
@@ -137,7 +141,7 @@ jobs:
           docker images
           echo "===== Starting make push ====="
           make push \
-            ARCH=amd64 QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
+            ARCH=${{ matrix.arch }} QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
             DEBIAN_BASE_VERSION=${{ env.RELEASE_BRANCH }} \
             REGISTRY=${{ env.REGISTRY_NAME }} \
             BASE_REGISTRY=${{ env.REGISTRY_NAME }} \
@@ -152,7 +156,7 @@ jobs:
           docker images
           echo "===== Starting make push ====="
           make push \
-            PLATFORMS=linux/loong64 \
+            PLATFORMS=linux/${{ matrix.arch }} \
             DISTROLESS_REGISTRY=ghcr.io/loong64 \
             DISTROLESS_IMAGE=debian:trixie-slim \
             REGISTRY=${{ env.REGISTRY_NAME }} \
@@ -167,7 +171,7 @@ jobs:
           docker images
           echo "===== Starting make push ====="
           make push \
-            ARCH=loong64 QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
+            ARCH=${{ matrix.arch }} QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
             BASEIMAGE=ghcr.io/loong64/debian:trixie-slim \
             REGISTRY=${{ env.REGISTRY_NAME }} \
             BASE_REGISTRY=${{ env.REGISTRY_NAME }} \
