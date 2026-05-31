@@ -135,6 +135,7 @@ jobs:
             BASEIMAGE=ghcr.io/loong64/debian:trixie-slim \
             REGISTRY=${{ env.REGISTRY_NAME }} \
             BASE_REGISTRY=${{ env.REGISTRY_NAME }} \
+            GORUNNER_VERSION=${{ env.RELEASE_BRANCH }} \
             IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
             -C images/build/distroless-iptables
           echo "===== make push completed ====="
