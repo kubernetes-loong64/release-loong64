@@ -110,3 +110,12 @@ jobs:
       #      -C images/build/setcap
       #    echo "===== make push completed ====="
       #    docker images
+      - name: Build release go-runner
+        working-directory: release
+        run: |
+          docker images
+          echo "===== Starting make push ====="
+          make push \
+            -C images/build/go-runner
+          echo "===== make push completed ====="
+          docker images
