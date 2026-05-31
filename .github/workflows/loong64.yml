@@ -81,17 +81,17 @@ jobs:
       - name: Apply patches
         working-directory: release
         run: git apply ../*.patch
-      - name: Build release debian-base
-        working-directory: release
-        run: |
-          docker images
-          echo "===== Starting make push ====="
-          make push \
-            ARCH=loong64 QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
-            BASEIMAGE=ghcr.io/loong64/debian:trixie-slim \
-            REGISTRY=${{ env.REGISTRY_NAME }} \
-            IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
-            SERIAL=${{ github.run_number }} \
-            -C images/build/debian-base
-          echo "===== make push completed ====="
-          docker images
+      #- name: Build release debian-base
+      #  working-directory: release
+      #  run: |
+      #    docker images
+      #    echo "===== Starting make push ====="
+      #    make push \
+      #      ARCH=loong64 QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
+      #      BASEIMAGE=ghcr.io/loong64/debian:trixie-slim \
+      #      REGISTRY=${{ env.REGISTRY_NAME }} \
+      #      IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
+      #      SERIAL=${{ github.run_number }} \
+      #      -C images/build/debian-base
+      #    echo "===== make push completed ====="
+      #    docker images
