@@ -14,6 +14,8 @@ The LoongArch architecture is not yet officially supported by upstream Kubernete
 2. **CI/CD pipeline** — Automated pipelines build Kubernetes components natively on **LoongArch64 (loong64)** hardware or via cross-compilation.
 3. **Artifacts** — Built container images are published for community use.
 
+See [Discussion #6 — Why Use container: debian:13?](https://github.com/orgs/kubernetes-loong64/discussions/6) for the rationale behind the Debian 13 container choice.
+
 ## Branch naming
 
 Push a branch named `loong64/<release-version>` (e.g. `loong64/v0.21.1`) to trigger a build.

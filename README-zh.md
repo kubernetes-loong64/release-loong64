@@ -14,6 +14,8 @@
 2. **CI/CD 流水线** — 自动化流水线在 **LoongArch64 (loong64)** 硬件上原生构建或通过交叉编译生成 Kubernetes 组件。
 3. **产物发布** — 构建好的容器镜像将发布供社区使用。
 
+关于 Debian 13 容器选型的理由，详见 [Discussion #6 — 为什么使用 container: debian:13？](https://github.com/orgs/kubernetes-loong64/discussions/6)。
+
 ## 分支命名
 
 推送 `loong64/<release 版本>` 格式的分支（如 `loong64/v0.21.1`）即可触发构建。
