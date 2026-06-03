@@ -2,17 +2,19 @@ name: loong64
 on:
   push:
     branches:
-      - loong64/*
+      - loong64-*
     tags:
-      - release-loong64/*/*
+      - release-loong64-*
   pull_request:
     branches:
-      - loong64/*
+      - loong64-*
 
 jobs:
   build:
     runs-on: ubuntu-latest
     container: debian:13
+    outputs:
+      DOCKER_TAG: ${{ steps.extract.outputs.DOCKER_TAG }}
     strategy:
       matrix:
         arch: [ amd64, loong64 ]
@@ -36,15 +38,30 @@ jobs:
             echo ${{ github.ref_name }}
           fi
       - name: Extract release branch
+        id: extract
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             REF=${{ github.base_ref }}
           else
             REF=${{ github.ref_name }}
           fi
-          RELEASE_BRANCH=$(echo $REF | awk -F'/' '{print $2}')
+          echo "REF=$REF"
+          RAW_VERSION=$(echo $REF | awk -F'loong64-' '{print $2}')
+          echo "RAW_VERSION=$RAW_VERSION"
+          RELEASE_BRANCH=$(echo $RAW_VERSION | awk -F'+' '{print $1}')
           echo "RELEASE_BRANCH=$RELEASE_BRANCH"
           echo "RELEASE_BRANCH=$RELEASE_BRANCH" >> ${GITHUB_ENV}
+          DOCKER_TAG=$(echo $RAW_VERSION | sed 's/+/-/g')
+          echo "DOCKER_TAG=$DOCKER_TAG"
+          echo "DOCKER_TAG=$DOCKER_TAG" >> ${GITHUB_ENV}
+          echo "DOCKER_TAG=$DOCKER_TAG" >> ${GITHUB_OUTPUT}
+          if echo "$RAW_VERSION" | grep -qE '[+].*(alpha|beta|rc)'; then
+            IS_STABLE=false
+          else
+            IS_STABLE=true
+          fi
+          echo "IS_STABLE=$IS_STABLE"
+          echo "IS_STABLE=$IS_STABLE" >> ${GITHUB_OUTPUT}
       - name: Clone release
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -129,8 +146,7 @@ jobs:
           make push \
             ARCH=${{ matrix.arch }} QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
             REGISTRY=${{ env.REGISTRY_NAME }} \
-            IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
-            SERIAL=${{ github.run_number }} \
+            IMAGE_VERSION=${{ env.DOCKER_TAG }} \
             -C images/build/debian-base
           echo "===== make push completed ====="
           docker images
@@ -141,11 +157,10 @@ jobs:
           echo "===== Starting make push ====="
           make push \
             ARCH=${{ matrix.arch }} QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
-            DEBIAN_BASE_VERSION=${{ env.RELEASE_BRANCH }} \
+            DEBIAN_BASE_VERSION=${{ env.DOCKER_TAG }} \
             REGISTRY=${{ env.REGISTRY_NAME }} \
             BASE_REGISTRY=${{ env.REGISTRY_NAME }} \
-            IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
-            SERIAL=${{ github.run_number }} \
+            IMAGE_VERSION=${{ env.DOCKER_TAG }} \
             -C images/build/setcap
           echo "===== make push completed ====="
           docker images
@@ -161,8 +176,7 @@ jobs:
           make push \
             PLATFORMS=linux/${{ matrix.arch }} \
             REGISTRY=${{ env.REGISTRY_NAME }} \
-            IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
-            SERIAL=${{ github.run_number }} \
+            IMAGE_VERSION=${{ env.DOCKER_TAG }} \
             -C images/build/go-runner
           echo "===== make push completed ====="
           docker images
@@ -177,9 +191,8 @@ jobs:
           make push \
             ARCH=${{ matrix.arch }} QEMUIMAGE=xfan1024/qemu-user-static QEMUVERSION=latest QEMUFLAGS= \
             REGISTRY=${{ env.REGISTRY_NAME }} \
-            GORUNNERIMAGE=${{ env.REGISTRY_NAME }}/go-runner-${{ matrix.arch }}:${{ env.RELEASE_BRANCH }} \
-            IMAGE_VERSION=${{ env.RELEASE_BRANCH }} \
-            SERIAL=${{ github.run_number }} \
+            GORUNNERIMAGE=${{ env.REGISTRY_NAME }}/go-runner-${{ matrix.arch }}:${{ env.DOCKER_TAG }} \
+            IMAGE_VERSION=${{ env.DOCKER_TAG }} \
             -C images/build/distroless-iptables
           echo "===== make push completed ====="
           docker images
@@ -192,13 +205,8 @@ jobs:
       contents: read
     env:
       REGISTRY_NAME: ${{ vars.REGISTRY_NAME || 'kubernetesloong64' }}
+      DOCKER_TAG: ${{ needs.build.outputs.DOCKER_TAG }}
     steps:
-      - name: Extract release branch
-        run: |
-          REF=${{ github.ref_name }}
-          RELEASE_BRANCH=$(echo $REF | awk -F'/' '{print $2}')
-          echo "RELEASE_BRANCH=$RELEASE_BRANCH"
-          echo "RELEASE_BRANCH=$RELEASE_BRANCH" >> ${GITHUB_ENV}
       - name: Login to Docker
         uses: docker/login-action@v4
         with:
@@ -206,20 +214,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Create and push multi-arch manifests
         run: |
-          REGISTRY=${{ env.REGISTRY_NAME }}
-          VERSION=${{ env.RELEASE_BRANCH }}
-          SERIAL=${{ github.run_number }}
-
           for IMAGE in debian-base setcap go-runner distroless-iptables; do
-            echo "===== Creating manifest for ${IMAGE}:${VERSION} ====="
-            docker manifest create ${REGISTRY}/${IMAGE}:${VERSION} \
-              ${REGISTRY}/${IMAGE}-amd64:${VERSION} \
-              ${REGISTRY}/${IMAGE}-loong64:${VERSION}
-            docker manifest push ${REGISTRY}/${IMAGE}:${VERSION}
-
-            echo "===== Creating manifest for ${IMAGE}:${VERSION}-${SERIAL} ====="
-            docker manifest create ${REGISTRY}/${IMAGE}:${VERSION}-${SERIAL} \
-              ${REGISTRY}/${IMAGE}-amd64:${VERSION}-${SERIAL} \
-              ${REGISTRY}/${IMAGE}-loong64:${VERSION}-${SERIAL}
-            docker manifest push ${REGISTRY}/${IMAGE}:${VERSION}-${SERIAL}
+            echo "===== Creating manifest for ${IMAGE}:${{ env.DOCKER_TAG }} ====="
+            docker manifest create ${{ env.REGISTRY_NAME }}/${IMAGE}:${{ env.DOCKER_TAG }} \
+              ${{ env.REGISTRY_NAME }}/${IMAGE}-amd64:${{ env.DOCKER_TAG }} \
+              ${{ env.REGISTRY_NAME }}/${IMAGE}-loong64:${{ env.DOCKER_TAG }}
+            docker manifest push ${{ env.REGISTRY_NAME }}/${IMAGE}:${{ env.DOCKER_TAG }}
           done
