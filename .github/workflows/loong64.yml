@@ -15,6 +15,8 @@ jobs:
     container: debian:13
     outputs:
       DOCKER_TAG: ${{ steps.extract.outputs.DOCKER_TAG }}
+      DOCKER_TAG_LATEST: ${{ steps.extract.outputs.DOCKER_TAG_LATEST }}
+      IS_STABLE: ${{ steps.extract.outputs.IS_STABLE }}
     strategy:
       matrix:
         arch: [ amd64, loong64 ]
@@ -55,6 +57,10 @@ jobs:
           echo "DOCKER_TAG=$DOCKER_TAG"
           echo "DOCKER_TAG=$DOCKER_TAG" >> ${GITHUB_ENV}
           echo "DOCKER_TAG=$DOCKER_TAG" >> ${GITHUB_OUTPUT}
+          DOCKER_TAG_LATEST=$(echo $RAW_VERSION | awk -F'+' '{print $1}')
+          echo "DOCKER_TAG_LATEST=$DOCKER_TAG_LATEST"
+          echo "DOCKER_TAG_LATEST=$DOCKER_TAG_LATEST" >> ${GITHUB_ENV}
+          echo "DOCKER_TAG_LATEST=$DOCKER_TAG_LATEST" >> ${GITHUB_OUTPUT}
           if echo "$RAW_VERSION" | grep -qE '[+].*(alpha|beta|rc)'; then
             IS_STABLE=false
           else
@@ -206,6 +212,8 @@ jobs:
     env:
       REGISTRY_NAME: ${{ vars.REGISTRY_NAME || 'kubernetesloong64' }}
       DOCKER_TAG: ${{ needs.build.outputs.DOCKER_TAG }}
+      DOCKER_TAG_LATEST: ${{ needs.build.outputs.DOCKER_TAG_LATEST }}
+      IS_STABLE: ${{ needs.build.outputs.IS_STABLE }}
     steps:
       - name: Login to Docker
         uses: docker/login-action@v4
@@ -220,4 +228,14 @@ jobs:
               ${{ env.REGISTRY_NAME }}/${IMAGE}-amd64:${{ env.DOCKER_TAG }} \
               ${{ env.REGISTRY_NAME }}/${IMAGE}-loong64:${{ env.DOCKER_TAG }}
             docker manifest push ${{ env.REGISTRY_NAME }}/${IMAGE}:${{ env.DOCKER_TAG }}
+            
+            echo "===== Creating manifest for ${IMAGE}:${{ env.DOCKER_TAG_LATEST }} ====="
+            if [ "${{ env.IS_STABLE }}" = "true" ]; then
+              docker manifest create ${{ env.REGISTRY_NAME }}/${IMAGE}:${{ env.DOCKER_TAG_LATEST }} \
+              ${{ env.REGISTRY_NAME }}/${IMAGE}-amd64:${{ env.DOCKER_TAG_LATEST }} \
+              ${{ env.REGISTRY_NAME }}/${IMAGE}-loong64:${{ env.DOCKER_TAG_LATEST }}
+              docker manifest push ${{ env.REGISTRY_NAME }}/${IMAGE}:${{ env.DOCKER_TAG_LATEST }}
+            else
+              echo "=== Skipping tag (pre-release) ==="
+            fi
           done
