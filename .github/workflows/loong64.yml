@@ -183,7 +183,7 @@ jobs:
           docker images
           inspect-image debian-base ${{ matrix.arch }}
       - name: Upload debian-base
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: debian-base-${{ matrix.arch }}
           path: release/debian-base-${{ matrix.arch }}.tar
@@ -203,7 +203,7 @@ jobs:
           docker images
           inspect-image setcap ${{ matrix.arch }}
       - name: Upload setcap
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: setcap-${{ matrix.arch }}
           path: release/setcap-${{ matrix.arch }}.tar
@@ -225,7 +225,7 @@ jobs:
           docker images
           inspect-image go-runner ${{ matrix.arch }}
       - name: Upload go-runner
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: go-runner-${{ matrix.arch }}
           path: release/go-runner-${{ matrix.arch }}.tar
@@ -247,7 +247,7 @@ jobs:
           docker images
           inspect-image distroless-iptables ${{ matrix.arch }}
       - name: Upload distroless-iptables
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: distroless-iptables-${{ matrix.arch }}
           path: release/distroless-iptables-${{ matrix.arch }}.tar
