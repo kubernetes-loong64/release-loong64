@@ -16,9 +16,10 @@
 
 关于 Debian 13 容器选型的理由，详见 [Discussion #6 — 为什么使用 container: debian:13？](https://github.com/orgs/kubernetes-loong64/discussions/6)。
 
-## 分支命名
+## 分支与标签命名
 
-推送 `loong64/<release 版本>` 格式的分支（如 `loong64/v0.21.1`）即可触发构建。
+- 推送 `loong64-<版本>` 格式的分支（如 `loong64-v0.21.1-3`）可触发 CI 构建，构建产物仅发布至本地 CI 镜像仓库。
+- 推送 `release-loong64-<版本>` 格式的标签（如 `release-loong64-v0.21.1+3`）可触发正式发布，将多架构镜像发布至 Docker Hub 并创建附有签名产物的 GitHub Release。
 
 ## 容器镜像
 

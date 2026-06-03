@@ -16,9 +16,10 @@ The LoongArch architecture is not yet officially supported by upstream Kubernete
 
 See [Discussion #6 — Why Use container: debian:13?](https://github.com/orgs/kubernetes-loong64/discussions/6) for the rationale behind the Debian 13 container choice.
 
-## Branch naming
+## Branch and Tag Naming
 
-Push a branch named `loong64/<release-version>` (e.g. `loong64/v0.21.1`) to trigger a build.
+- Push a branch named `loong64-<version>` (e.g. `loong64-v0.21.1-3`) to trigger a CI build. The build publishes images to the local CI registry only.
+- Push a tag named `release-loong64-<version>` (e.g. `release-loong64-v0.21.1+3`) to trigger a release. This publishes multi-arch images to Docker Hub and creates a GitHub Release with signed artifacts.
 
 ## Container Images
 
