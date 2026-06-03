@@ -144,6 +144,31 @@ jobs:
       - name: Apply patches
         working-directory: release
         run: git apply ../*.patch
+      - name: Write image inspect script
+        run: |
+          cat <<'SCRIPT' > /usr/local/bin/inspect-image
+          #!/bin/bash
+          set -euo pipefail
+          IMAGE_NAME=$1
+          ARCH=$2
+          TAR_FILE="${IMAGE_NAME}-${ARCH}.tar"
+          IMAGE_REF="${REGISTRY_NAME}/${IMAGE_NAME}-${ARCH}:${DOCKER_TAG}"
+          echo "=== Saving $IMAGE_REF ==="
+          docker save -o "$TAR_FILE" "$IMAGE_REF"
+          echo "=== Image tarball ==="
+          ls -lha "$TAR_FILE"
+          echo "=== Manifest ==="
+          echo "--- repositories ---"
+          tar -xOf "$TAR_FILE" repositories
+          echo "--- manifest.json ---"
+          tar -xOf "$TAR_FILE" manifest.json | jq
+          echo "--- config ---"
+          CONFIG_FILE=$(tar -xOf "$TAR_FILE" manifest.json | jq -r '.[0].Config')
+          tar -xOf "$TAR_FILE" "$CONFIG_FILE" | jq
+          echo "--- os, architecture ---"
+          tar -xOf "$TAR_FILE" "$CONFIG_FILE" | jq '{os, architecture}'
+          SCRIPT
+          chmod +x /usr/local/bin/inspect-image
       - name: Build release debian-base
         working-directory: release
         run: |
@@ -156,20 +181,7 @@ jobs:
             -C images/build/debian-base
           echo "===== make push completed ====="
           docker images
-          IMAGE_REF=${{ env.REGISTRY_NAME }}/debian-base-${{ matrix.arch }}:${{ env.DOCKER_TAG }}
-          echo "=== Saving $IMAGE_REF ==="
-          docker save -o debian-base-${{ matrix.arch }}.tar $IMAGE_REF
-          echo "=== Image tarball ==="
-          ls -lha debian-base-${{ matrix.arch }}.tar
-          echo "=== Manifest ==="
-          echo "--- repositories ---"
-          tar -xOf debian-base-${{ matrix.arch }}.tar repositories
-          echo "--- manifest.json ---"
-          tar -xOf debian-base-${{ matrix.arch }}.tar manifest.json | jq
-          echo "--- config ---"
-          tar -xOf debian-base-${{ matrix.arch }}.tar $(tar -xOf debian-base-${{ matrix.arch }}.tar manifest.json | jq -r '.[0].Config') | jq
-          echo "--- os, architecture ---"
-          tar -xOf debian-base-${{ matrix.arch }}.tar $(tar -xOf debian-base-${{ matrix.arch }}.tar manifest.json | jq -r '.[0].Config') | jq '{os, architecture}'
+          inspect-image debian-base ${{ matrix.arch }}
       - name: Build release setcap
         working-directory: release
         run: |
@@ -184,20 +196,7 @@ jobs:
             -C images/build/setcap
           echo "===== make push completed ====="
           docker images
-          IMAGE_REF=${{ env.REGISTRY_NAME }}/setcap-${{ matrix.arch }}:${{ env.DOCKER_TAG }}
-          echo "=== Saving $IMAGE_REF ==="
-          docker save -o setcap-${{ matrix.arch }}.tar $IMAGE_REF
-          echo "=== Image tarball ==="
-          ls -lha setcap-${{ matrix.arch }}.tar
-          echo "=== Manifest ==="
-          echo "--- repositories ---"
-          tar -xOf setcap-${{ matrix.arch }}.tar repositories
-          echo "--- manifest.json ---"
-          tar -xOf setcap-${{ matrix.arch }}.tar manifest.json | jq
-          echo "--- config ---"
-          tar -xOf setcap-${{ matrix.arch }}.tar $(tar -xOf setcap-${{ matrix.arch }}.tar manifest.json | jq -r '.[0].Config') | jq
-          echo "--- os, architecture ---"
-          tar -xOf setcap-${{ matrix.arch }}.tar $(tar -xOf setcap-${{ matrix.arch }}.tar manifest.json | jq -r '.[0].Config') | jq '{os, architecture}'
+          inspect-image setcap ${{ matrix.arch }}
       - name: Build release go-runner
         working-directory: release
         run: |
@@ -214,20 +213,7 @@ jobs:
             -C images/build/go-runner
           echo "===== make push completed ====="
           docker images
-          IMAGE_REF=${{ env.REGISTRY_NAME }}/go-runner-${{ matrix.arch }}:${{ env.DOCKER_TAG }}
-          echo "=== Saving $IMAGE_REF ==="
-          docker save -o go-runner-${{ matrix.arch }}.tar $IMAGE_REF
-          echo "=== Image tarball ==="
-          ls -lha go-runner-${{ matrix.arch }}.tar
-          echo "=== Manifest ==="
-          echo "--- repositories ---"
-          tar -xOf go-runner-${{ matrix.arch }}.tar repositories
-          echo "--- manifest.json ---"
-          tar -xOf go-runner-${{ matrix.arch }}.tar manifest.json | jq
-          echo "--- config ---"
-          tar -xOf go-runner-${{ matrix.arch }}.tar $(tar -xOf go-runner-${{ matrix.arch }}.tar manifest.json | jq -r '.[0].Config') | jq
-          echo "--- os, architecture ---"
-          tar -xOf go-runner-${{ matrix.arch }}.tar $(tar -xOf go-runner-${{ matrix.arch }}.tar manifest.json | jq -r '.[0].Config') | jq '{os, architecture}'
+          inspect-image go-runner ${{ matrix.arch }}
       - name: Build release distroless-iptables
         working-directory: release
         run: |
@@ -244,20 +230,7 @@ jobs:
             -C images/build/distroless-iptables
           echo "===== make push completed ====="
           docker images
-          IMAGE_REF=${{ env.REGISTRY_NAME }}/distroless-iptables-${{ matrix.arch }}:${{ env.DOCKER_TAG }}
-          echo "=== Saving $IMAGE_REF ==="
-          docker save -o distroless-iptables-${{ matrix.arch }}.tar $IMAGE_REF
-          echo "=== Image tarball ==="
-          ls -lha distroless-iptables-${{ matrix.arch }}.tar
-          echo "=== Manifest ==="
-          echo "--- repositories ---"
-          tar -xOf distroless-iptables-${{ matrix.arch }}.tar repositories
-          echo "--- manifest.json ---"
-          tar -xOf distroless-iptables-${{ matrix.arch }}.tar manifest.json | jq
-          echo "--- config ---"
-          tar -xOf distroless-iptables-${{ matrix.arch }}.tar $(tar -xOf distroless-iptables-${{ matrix.arch }}.tar manifest.json | jq -r '.[0].Config') | jq
-          echo "--- os, architecture ---"
-          tar -xOf distroless-iptables-${{ matrix.arch }}.tar $(tar -xOf distroless-iptables-${{ matrix.arch }}.tar manifest.json | jq -r '.[0].Config') | jq '{os, architecture}'
+          inspect-image distroless-iptables ${{ matrix.arch }}
 
   manifest:
     runs-on: ubuntu-latest
